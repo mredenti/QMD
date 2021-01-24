@@ -85,7 +85,7 @@ if __name__ == '__main__':
     #potential params
     NEQS = 2
     if len(sys.argv) > 1:
-        DELTA, C, ALPHA, EPS, P0 = [float(string) for string in sys.argv[1:]]
+        DELTA, ALPHA, EPS, P0 = [float(string) for string in sys.argv[1:]]
     FNAME = './data/single/center/flatdelta%.3fc%.3falpha%.3feps%.3fp%d.txt' %(DELTA, C, ALPHA, EPS, P0)
     # ---------------- INIT -------------------------
     space = Space(N, XL, EPS, XR)
