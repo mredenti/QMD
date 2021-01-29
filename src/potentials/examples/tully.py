@@ -27,32 +27,25 @@ class Tully(Potential):
     
     def rho(self, x):
 
-        return np.sqrt(self.Z(x)**2 + self.X(x)**2)
+        return np.sqrt(self.v11(x)**2 + self.v12(x)**2)
 
     def v11(self, x):
+        
+        return self.a * np.sign(x) * (1 - np.exp(-self.b*np.abs(x)))
 
-        return self.Z(x) / self.rho(x)
-    
     def v22(self, x):
 
         return - self.v11(x)
 
     def v12(self, x):
 
-        return self.X(x) / self.rho(x)
+        return self.c * np.exp(-self.d_ * x**2)
     
     def v21(self, x):
 
         return self.v12(x)
     # up from here should be inherited...
 
-    def Z(self, x):
-
-        return self.a * np.sign(x) * (1 - np.exp(-self.b*np.abs(x)))
-
-    def X(self, x):
-
-        return self.c * np.exp(-self.d_ * x**2)
 
 # ------------- ADIABATIC POTENTIALS ------------------
 
@@ -101,10 +94,13 @@ if __name__ == '__main__':
 
     import matplotlib.pyplot as plt
 
-    x = np.arange(5,20,0.1)
-    tully = Tully(1, 1, 0.005, 1, 'up')
-    plt.plot(x, (1 - tully.v11(x))/tully.v12(x))
-    #plt.plot(x, tully.v12(x))
-    print(tully.X(x))
+    x = np.arange(-20,20,0.1)
+    tully = Tully(0.2, 0.5, 0.005, 1, 'up')
+    #plt.plot(x, tully.v11(x))
+    plt.plot(x, tully.v12(x), label = 'X')
+    plt.plot(x, tully.v11(x) , label = 'Z')
+    plt.plot(x, tully.rho(x))
+    print(tully.v12(x))
+    plt.legend()
     plt.show()
     plt.close('all')
