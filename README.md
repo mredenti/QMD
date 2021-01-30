@@ -39,6 +39,6 @@ If you have any questions or you would like to collaborate, feel free to contact
 The development of QMD was made possible with the support of the following organization:
 | Logo | Name | URL |
 |:----:|:----:|:---:|
-|...   | Maxwell Institute Graduate School | https://www.maxwell.ac.uk/graduate-school/|
+|![mifms](doc/maxwell-logo.png) | Maxwell Institute For Mathematical Sciences | https://www.maxwell.ac.uk/graduate-school/|
 
 
