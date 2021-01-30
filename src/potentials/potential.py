@@ -41,6 +41,10 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
         pass
     
     @abstractmethod
+    def theta(self, x):
+        pass
+    
+    @abstractmethod
     def rho(self, x):
         pass
     
@@ -89,13 +93,32 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
 
         return s
     
+    #"""
+    def get_chrepr(self, x):
+        Z = self.v11(x)
+        X = self.v12(x)
+
+        theta = np.arctan2(X,Z)
+        
+        D = np.ones(shape=(len(x), 2, 2), dtype=np.complex128)
+        D[:, 0, 0] = np.cos(self.theta(x)/2) #*np.exp(1j*theta/2)
+        D[:, 1, 0] = np.sin(self.theta(x)/2) #*np.exp(1j*theta/2)
+        D[:, 0, 1] = np.sin(self.theta(x)/2) #*np.exp(1j*theta/2)
+        D[:, 1, 1] = -np.cos(self.theta(x)/2) #*np.exp(1j*theta/2)
+        # to adiabatic matrix
+        A = np.ones(shape=(len(x), 2, 2), dtype=np.complex128)
+        A = D
+        
+        return (A, D)
+    
+    """
     def get_chrepr(self, x):
         
         Z = self.v11(x)
         X = self.v12(x)
         
-        phi1Plus = (Z + 1)/X # x is non-zero for the example considered so far...
-        phi2Plus = (Z - 1)/X
+        phi1Plus = (Z + np.sqrt(Z**2 + X**2))/X # x is non-zero for the example considered so far...
+        phi2Plus = (Z - np.sqrt(Z**2 + X**2))/X
         phi1Minus = np.ones(len(phi1Plus))
         phi2Minus = np.ones(len(phi2Plus))
         k1 = 1/np.sqrt(phi1Plus**2 + phi1Minus**2)
@@ -114,8 +137,7 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
         A[:, 1, 1] = k2 * phi2Minus
 
         return (A, D)
-
-       
+        """
 if __name__ == '__main__':
 
     pass

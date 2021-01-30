@@ -1,9 +1,7 @@
 ## Non-Adiabatic Transitions in Quantum Molecular Dynamics
-#### A project under the Supervision of Dr. Ben Goddard (School of Mathematics, University of Edinburgh) and Dr. Adam Kirrander (School of Chemistry,University of Edinburgh) 
+#### In collaboration with Dr. Ben Goddard (School of Mathematics, University of Edinburgh) and Dr. Adam Kirrander (School of Chemistry,University of Edinburgh) 
 
 
-## Authorship:
-#### The repository is an attempt to replicate the repository authored by Dr. Ben Goddard, available at https://bitbucket.org/bdgoddard/qmd1dpublic/src/master/ but in Python rather than Matlab.
 
 ## Runnig scripts
 
@@ -32,12 +30,8 @@ python3 <file_name>.py
 
 The tests/ folder contains...
 
-## It should contain a few lines explaining the purpose of the project or library (without assuming the user knows anything about the project), the URL of the main source for the software, and some basic credit information. This file is the main entry point for readers of the code.
-
 
 # TODO
-planned development for the code.
 
 Add inheritance diagram + other code structure diagrams...
 
-np.ones((3,3), order 'F').flags - why is it faster??

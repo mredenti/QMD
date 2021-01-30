@@ -1,1 +1,4 @@
-.*txt
+*.txt
+*.pyc
+!**/__pycache__/
+wip_*

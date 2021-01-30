@@ -33,7 +33,7 @@ class Single(Potential):
     
     def v22(self, x):
 
-        return - self.v11(x)
+        return -self.v11(x)
 
     def v12(self, x):
 
@@ -48,6 +48,9 @@ class Single(Potential):
 
         return self.c/self.alpha * np.arctan(np.tanh(self.alpha*x/2))
 
+    def theta_prime(self, x):
+
+        return self.c/2/np.cosh(self.alpha*x)
 
 # ------------- ADIABATIC POTENTIALS ------------------
 
@@ -90,15 +93,16 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     DELTA = 0.5
-    C = -np.pi/3
-    ALPHA = np.pi/2
+    C = -np.pi
+    ALPHA = np.pi
     LEVEL = 'up'
 
     x = np.linspace(-10, 10, 10**2)
     pot = Single(DELTA, C, ALPHA, LEVEL)
-    print(pot.get_tau())
 
-    plt.plot(x, pot.V(x))
+    plt.plot(x, pot.theta_prime(x))
+    plt.xlabel('x')
+    plt.ylabel('coupling (theta prime)')
     plt.show()
     plt.close('all')
 
