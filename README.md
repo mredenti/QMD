@@ -1,11 +1,16 @@
 ## Non-Adiabatic Transitions in Quantum Molecular Dynamics
-#### In collaboration with Dr. Ben Goddard (School of Mathematics, University of Edinburgh) and Dr. Adam Kirrander (School of Chemistry,University of Edinburgh) 
+## Table of contents
+* [Introduction](#introduction)
+* [Installation](#installation)
+* [Contacts](#contacts)
+* [Acknowledgements](#acknowledgements)
 
+## Introduction
+QMD is a library for quantum molecular dynamics on multiple electronic energy levels in one dimension. As of this moment, it supports a Strang-Splitting scheme to compute reference solutions, an algorithm for computing non-adiabatic transitions that requires only one level Born-Oppenheimer dynamics (https://epubs.siam.org/doi/abs/10.1137/100802347) and a surface hopping algorithm. The library is designed for proof of concepts ideas for low dimensional systems. 
 
+## Installation
 
-## Runnig scripts
-
-#### Create a virtual environment with the packages listed in requirements.txt if you would like to avoid potential conflicts among projetcs
+Create a virtual environment with the packages listed in requirements.txt if you would like to avoid potential conflicts among projetcs
 
 1. Create a virtualenv:
     ```unix
@@ -20,18 +25,20 @@
     pip install -r <path_to_cloned_repository./requirements.txt
     ```
 
-#### Now you are ready to run scripts from top directory
+Now you are ready to run scripts from top directory
 
 ```python
 python3 <file_name>.py
 ```
 
-## Runnig tests
+## Contacts
+If you have any questions or you would like to collaborate, feel free to contact:
+  * Mr. Michael Redenti (M.Redenti@sms.ed.ac.uk)
+  
+## Acknowledgements
+The development of QMD was made possible with the support of the following organization:
+| Logo | Name | URL |
+|:----:|:----:|:---:|
+|...   | Maxwell Institute Graduate School | https://www.maxwell.ac.uk/graduate-school/|
 
-The tests/ folder contains...
-
-
-# TODO
-
-Add inheritance diagram + other code structure diagrams...
 
