@@ -1,5 +1,5 @@
 <p align="center">
-<img src="docs/psi-logo.png" width="500">
+<img src="docs/psi-logo.png" width="1000">
 </p>
 
 ## Non-Adiabatic Transitions in Quantum Molecular Dynamics
