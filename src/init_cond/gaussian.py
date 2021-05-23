@@ -23,7 +23,7 @@ class Gaussian(Wavepacket):  # or does it??
             if neqs == 2:
                 self.psi = np.stack((self.psi, np.zeros(space.n, dtype='complex_')))
                 self.psihat = np.stack((self.psihat, np.zeros(space.n, dtype='complex_')))
-        print('Initial wavepacket is a Gaussian: q0=%.2f, p0=%.2f, eps=%.3f' \
+        print('-----> Gaussian wavepacket: q0=%.4f, p0=%.4f, eps=%.4f' \
               %(q0, p0, eps))
         #self.eval_psi(Space)
         #self.eval_psihat(Space)

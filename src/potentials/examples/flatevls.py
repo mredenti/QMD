@@ -15,39 +15,36 @@ class FlatEvls(Potential):
         self.delta = delta
         self.q_c = q_c
     # ----------------- DIABATIC POTENTIAL --------------
-
-    def v1(self, x):
-
-        return self.delta * np.cos(self.theta(x))
     
-    def v2(self, x):
+    def v11(self, x):
 
-        return - self.v1(x)
+        return np.cos(self.theta(x))
+    
+    def v22(self, x):
+
+        return - self.v11(x)
 
     def v12(self, x):
 
-        return self.delta * np.sin(self.theta(x))
+        return np.sin(self.theta(x))
     
+    def v21(self, x):
+
+        return self.v12(x)
     # up from here should be inherited...
 
-    def theta(self, x):
+    def d(self, x):
 
-        return np.arctan(x/self.q_c) # arctan2...?
+        return x - x
     
     def rho(self, x):
 
         return x - x + self.delta
+    
+    def theta(self, x):
 
-    def V(self, x): # if called multiple times then set up differently
-        # adiabatic surfaces
-        print('Flat eigenvalues')
-        sign = 1 if self.level == 'up' else -1
-        
-        return x - x + sign * self.delta
-
-    def gap(self,x):
-
-        return 2*self.delta
+        return np.arctan(x/self.q_c) # arctan2...?
+    
 # ------------- ADIABATIC POTENTIALS ------------------
 
     def V1(self, x):
@@ -77,7 +74,7 @@ class FlatEvls(Potential):
 
 if __name__ == "__main__":
 
-    import matplotlib.pyplot as plt
+#    import matplotlib.pyplot as plt
 
     DELTA = 0.2
     Q_C = 0.1
