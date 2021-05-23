@@ -13,7 +13,7 @@ class Single(Potential):
         """
         super().__init__(level)
         
-        self.name = 'Single - flatevls'
+        self.name = 'Single - constant electronic energy levels'
         self.delta = delta 
         self.c = c
         self.alpha = alpha
@@ -90,7 +90,7 @@ class Single(Potential):
 
 if __name__ == "__main__":
 
-    import matplotlib.pyplot as plt
+#    import matplotlib.pyplot as plt
 
     DELTA = 0.5
     C = -np.pi
@@ -100,7 +100,12 @@ if __name__ == "__main__":
     x = np.linspace(-10, 10, 10**2)
     pot = Single(DELTA, C, ALPHA, LEVEL)
 
-    plt.plot(x, pot.theta_prime(x))
+    plt.plot(x, pot.theta_prime(x), label = r'$c = -\pi$')
+    
+    pot.c = C*2
+    plt.plot(x, pot.theta_prime(x), label = r'$c = -2\pi$')
+    
+    plt.legend()
     plt.xlabel('x')
     plt.ylabel('coupling (theta prime)')
     plt.show()

@@ -39,8 +39,9 @@ class Strang:
             Wave.psi = self.to_diab(Wave.psi)
             Wave.psihat = efft.fft(Wave, Space)
         if itr == 1:
-            # evolve half a step
+        # evolve half a step
             self.__evolve(self.khalf, self.vfull, Wave, Space)
+        # ...
         elif itr == max_itr:
             # last half step
             Wave.psihat = np.einsum(self.subscript, self.khalf, Wave.psihat)

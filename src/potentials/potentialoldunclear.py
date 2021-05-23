@@ -41,21 +41,25 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
         pass
     
     @abstractmethod
+    def theta(self, x):
+        pass
+    
+    @abstractmethod
+    def rho(self, x):
+        pass
+    
+    @abstractmethod
+    def d(self, x):
+        pass
+    
+    @abstractmethod
     def get_tau(self):
         pass
 
-    def d(self, x):
-        """Average diagonal surfaces"""
-        return (self.v11(x) + self.v22(x))/2
+    def gap(self, x):
+        # gap between Adiabatic surfaces
+        return 2 * self.rho(x)
 
-    def Z(self, x):
-        """Half gap diagonal terms"""
-        return (self.v11(x) - self.v22(x))/2
-    
-    def rho(self, x):
-        """Half gap diagonal terms"""
-        return np.sqrt(self.Z(x)**2 + self.v12(x)**2)
-    
     def V(self, x): # if called multiple times then set up differently
         # adiabatic surfaces
         sign = 1 if self.level == 'up' else -1
@@ -65,14 +69,14 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
     def u_diab(self, x):
 
         s = np.ones(shape = (len(x), 2, 2))
-        s[:,0,0] = self.v11(x) #self.rho(x)*self.v11(x) + self.d(x)
-        s[:,1,1] = self.v22(x) #self.rho(x)*self.v22(x) + self.d(x) # sign thing?
-        s[:,0,1] = self.v12(x) #self.rho(x)*self.v12(x) 
-        s[:,1,0] = self.v21(x) #self.rho(x)*self.v21(x)
+        s[:,0,0] = self.rho(x)*self.v11(x) + self.d(x)
+        s[:,1,1] = self.rho(x)*self.v22(x) + self.d(x) # sign thing?
+        s[:,0,1] = self.rho(x)*self.v12(x) 
+        s[:,1,0] = self.rho(x)*self.v21(x)
 
         return s
     
-    """
+    #"""
     def get_chrepr(self, x):
         Z = self.v11(x)
         X = self.v12(x)
@@ -116,7 +120,7 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
         A[:, 1, 1] = k2 * phi2Minus
 
         return (A, D)
-
+        """
 if __name__ == '__main__':
 
     pass

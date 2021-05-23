@@ -45,7 +45,10 @@ class Wavepacket:
 
     def get_massp(self, space):
 
-        return np.sum(abs(self.psihat)**2, axis=1)*space.dp
+        if len(self.psihat.shape) == 1:
+            return np.sum(abs(self.psihat)**2)*space.dp
+        else:
+            return np.sum(abs(self.psihat)**2, axis=1)*space.dp
 
     def get_meanx(self, space):
 
@@ -58,9 +61,12 @@ class Wavepacket:
 
     def get_meanp(self, space):
 
-        return np.sum(abs(self.psihat)**2 * space.pgrid, axis=1)*space.dp / \
-            (np.sum(abs(self.psihat)**2, axis=1)*space.dp)
-
+        if len(self.psi.shape) == 1:
+            return np.sum(abs(self.psihat)**2 * space.pgrid)*space.dp / \
+                    (np.sum(abs(self.psihat)**2)*space.dp)
+        else:   
+            return np.sum(abs(self.psihat)**2 * space.pgrid, axis=1)*space.dp / \
+                    (np.sum(abs(self.psihat)**2, axis=1)*space.dp)
 
 if __name__ == "__main__":
 
