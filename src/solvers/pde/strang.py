@@ -38,6 +38,7 @@ class Strang:
         if self.neqs != 1:
             Wave.psi = self.to_diab(Wave.psi)
             Wave.psihat = efft.fft(Wave, Space)
+        """
         if itr == 1:
         # evolve half a step
             self.__evolve(self.khalf, self.vfull, Wave, Space)
@@ -47,9 +48,15 @@ class Strang:
             Wave.psihat = np.einsum(self.subscript, self.khalf, Wave.psihat)
             Wave.psi = efft.ifft(Wave,Space)
         else:
-            # evolve half a step
+            # evolve full step
             self.__evolve(self.kfull, self.vfull, Wave, Space)
-           
+        """ 
+        # use this when comparing methods to literature...?
+        self.__evolve(self.khalf, self.vfull, Wave, Space)
+        # last half step
+        Wave.psihat = np.einsum(self.subscript, self.khalf, Wave.psihat)
+        Wave.psi = efft.ifft(Wave,Space)
+        
         if self.neqs != 1:
             Wave.psi = self.to_adiab(Wave.psi)
             Wave.psihat = efft.fft(Wave, Space)
