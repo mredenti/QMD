@@ -14,6 +14,7 @@ class Wavepacket:
         :type name: str
         """
         self.name = name
+        #self.eps = eps
         # init dynamics always in adiabatic representation # always needs to
         #have an up to date adiabatic and diabatic representation
         self.repr = 'adia'
@@ -67,6 +68,25 @@ class Wavepacket:
         else:   
             return np.sum(abs(self.psihat)**2 * space.pgrid, axis=1)*space.dp / \
                     (np.sum(abs(self.psihat)**2, axis=1)*space.dp)
+    
+    def get_ke(self, space):
+        
+        if len(self.psi.shape) == 1:
+            return 1/2 * np.sum(abs(self.psihat)**2 * space.pgrid**2)*space.dp / \
+                    (np.sum(abs(self.psihat)**2)*space.dp)
+        else:   
+            return 1/2 * np.sum(abs(self.psihat)**2 * space.pgrid**2, axis=1)*space.dp / \
+                    (np.sum(abs(self.psihat)**2, axis=1)*space.dp)
+    
+    def get_e(self, space, potential):
+        
+        ke = self.get_ke(space)
+        if len(self.psi.shape) == 1:
+            return np.sum(abs(self.psi)**2 * potential.V(space.xgrid))*space.dx / \
+                    (np.sum(abs(self.psi)**2)*space.dx) + ke
+        else:   
+            return np.sum(abs(self.psi)**2 * potential.u_adiab(space.xgrid), axis=1)*space.dx / \
+                    (np.sum(abs(self.psi)**2, axis=1)*space.dx) + ke
 
 if __name__ == "__main__":
 

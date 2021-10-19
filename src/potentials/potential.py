@@ -72,6 +72,13 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
 
         return s
     
+    def u_adiab(self, x):
+
+        s = np.ones(shape = (2, len(x)))
+        s[0,:] = self.rho(x) #self.rho(x)*self.v11(x) + self.d(x)
+        s[1,:] = - self.rho(x) #self.rho(x)*self.v22(x) + self.d(x) # sign thing?
+
+        return s
     """
     def get_chrepr(self, x):
         Z = self.v11(x)
