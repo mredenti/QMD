@@ -9,6 +9,6 @@ class Time:
         self.dt         = tstep 
         self.dir        = tdir
         self.max_itr    = int(t/tstep)
-        self.snap       = np.arange(1,self.max_itr + 6, int(self.max_itr/200))         
+        self.snap       = np.arange(0,self.max_itr, int(t/tstep/40))    #       
         print('Time: T=%d, dt=%.3f, dir=%d, max_itr=%d \n' 
              %(t, tstep, tdir, self.max_itr))

@@ -41,7 +41,7 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
         pass
     
     @abstractmethod
-    def get_tau(self):
+    def get_tau(self, x):
         pass
 
     def d(self, x):
@@ -52,9 +52,32 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
         """Half gap diagonal terms"""
         return (self.v11(x) - self.v22(x))/2
     
-    def rho(self, x):
+    def Zd(self, x):
         """Half gap diagonal terms"""
+        return (self.v11d(x) - self.v22d(x))/2
+    
+    def Zdd(self, x):
+        """Half gap diagonal terms"""
+        return (self.v11dd(x) - self.v22dd(x))/2
+    
+    def rho(self, x):
+        """Eigenvalue
+        """
         return np.sqrt(self.Z(x)**2 + self.v12(x)**2)
+
+    def rho_complex_arg(self, x):
+        """Eigenvalue"""
+        return [np.sqrt(self.Z(x[0] + 1j*x[1])**2 + self.v12(x[0] + 1j*x[1])**2).real,
+                np.sqrt(self.Z(x[0] + 1j*x[1])**2 + self.v12(x[0] + 1j*x[1])**2).imag]
+    
+    def rho_complex_arg2(self, x, y):
+        """Eigenvalue"""
+        return np.sqrt(self.Z(x + 1j*y)**2 + self.v12(x + 1j*y)**2).real + \
+                1j * np.sqrt(self.Z(x + 1j*y)**2 + self.v12(x + 1j*y)**2).imag
+    
+    def theta(self, x):
+
+        return np.arctan2(self.v12(x),  self.Z(x))
     
     def V(self, x): # if called multiple times then set up differently
         # adiabatic surfaces
@@ -62,22 +85,37 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
 
         return self.d(x) + sign * self.rho(x)
     
-    def u_diab(self, x):
+    def u_diab(self, x): # do i need to change this if i have zero trace? what is this?
 
         s = np.ones(shape = (len(x), 2, 2))
-        s[:,0,0] = self.v11(x) #self.rho(x)*self.v11(x) + self.d(x)
-        s[:,1,1] = self.v22(x) #self.rho(x)*self.v22(x) + self.d(x) # sign thing?
-        s[:,0,1] = self.v12(x) #self.rho(x)*self.v12(x) 
-        s[:,1,0] = self.v21(x) #self.rho(x)*self.v21(x)
+        s[:,0,0] = self.v11(x) 
+        s[:,1,1] = self.v22(x) 
+        s[:,0,1] = self.v12(x)  
+        s[:,1,0] = self.v21(x) 
 
         return s
     
+    def u_adiab(self, x):
+
+        s = np.ones(shape = (2, len(x)))
+        s[0,:] = self.rho(x) + self.d(x)
+        s[1,:] = - self.rho(x) + self.d(x) # sign thing?
+
+        return s
+    
+    def u_adiab(self, x):
+
+        s = np.ones(shape = (2, len(x)))
+        s[0,:] = self.rho(x) #self.rho(x)*self.v11(x) + self.d(x)
+        s[1,:] = - self.rho(x) #self.rho(x)*self.v22(x) + self.d(x) # sign thing?
+
+        return s
     """
     def get_chrepr(self, x):
-        Z = self.v11(x)
-        X = self.v12(x)
-
-        theta = np.arctan2(X,Z)
+        
+        #Z = self.v11(x)
+        #X = self.v12(x)
+        #theta = np.arctan2(X,Z)
         
         D = np.ones(shape=(len(x), 2, 2), dtype=np.complex128)
         D[:, 0, 0] = np.cos(self.theta(x)/2) #*np.exp(1j*theta/2)
@@ -93,7 +131,7 @@ class Potential(ABC): # GOOD IDEA: SET UP A BASE CLASS FOR EVERYONE TO EXTEND UP
     """
     def get_chrepr(self, x):
         
-        Z = self.v11(x)
+        Z = (self.v11(x) - self.v22(x)) / 2 # this may need to be changed
         X = self.v12(x)
         
         phi1Plus = (Z + np.sqrt(Z**2 + X**2))/X # x is non-zero for the example considered so far...
