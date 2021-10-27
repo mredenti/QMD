@@ -6,5 +6,5 @@ do
     do 
       sleep 1
     done 
-    ./lz_mass $delta &
+    python3 ./run.py $delta &
 done
