@@ -1,13 +1,31 @@
-def run_qsssh(time, space, solver, wave, potential, fname)
+def run_qsssh(time, space, solver, wave, potential, fname):
     
     f = open(fname, 'w')
     header = 'itr \t mean_x_up \t mean_x_down \t mean_p_up \t mean_p_down \
             \t ke_up \t ke_down \t e_up \t e_down \t mass_up \t mass_down \n'
     f.write(header)
 
+    # probably here you'd want to initialise the gap values
+    ####
+    wave.rho_new = potential.rho(wave.get_meanx(space))
+    wave.rho_curr =  wave.rho_new
+    wave.rho_old = wave.rho_curr
+    ####
+
     for itr in range(time.max_itr):
         
         solver.do_step(wave, space, itr, time.max_itr)
+        # update gap status
+        wave.rho_old = wave.rho_curr
+        wave.rho_curr = wave.rho_new
+        wave.rho_new = potential.rho(wave.get_meanx(space))
+        
+        if (wave.rho_old - wave.rho_curr) * (wave.rho_new - wave.rho_curr) > 0:
+            # spawn a wavepacket onto the lower level 
+            # pass wave and whether hopping from one level to the other
+            # for the moment i would assume you are hopping from top to bottom
+            # its evolution will now have different dynamics 
+            # evolved the spawned wavepacket until the last itr 
         
         if itr in time.snap:
             mean_x_up = wave.get_meanx(space)[0]
@@ -106,10 +124,10 @@ if __name__ == '__main__':
     wave = Gaussian(EPS, q, p, 'boa', 1, space) # init psi and psi hat
     print(wave.psi.shape)
     time_forward = Time(T, TSTEP, 1)
-    solver_single = Strang(EPS, space, time_forward, potential, 1)
+    solver_single = Strang(EPS, space, time_forward, potential, 1) 
     # run one level dynamics -> detect crossing -> spawn wavepacket 
+    run_qsssh(time_forward, space, solver_single, wave, potential, FNAME_OBS)
     """
-    run_coupled(time_forward, space, solver_coupled, wave, potential, FNAME_OBS)
     
     # --------------- SAVE DATA --------------
     wave_up = Gaussian(EPS, q, p, 'exact_up') # init psi and psi hat
