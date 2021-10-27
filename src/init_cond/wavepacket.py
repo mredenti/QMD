@@ -20,6 +20,9 @@ class Wavepacket:
         self.repr = 'adia'
         self.psi = None
         self.psihat = None
+        self.rho_old = None
+        self.rho_curr = None 
+        self.rho_new = None 
         # following the mathematical logic/defn of a function acting on a domain
         print('Wavepacket initialised')
     
