@@ -1,11 +1,10 @@
-def run_coupled(time, space, solver, wave, potential, fname):
+def run_qsssh(time, space, solver, wave, potential, fname)
     
     f = open(fname, 'w')
     header = 'itr \t mean_x_up \t mean_x_down \t mean_p_up \t mean_p_down \
             \t ke_up \t ke_down \t e_up \t e_down \t mass_up \t mass_down \n'
     f.write(header)
 
-    count = 0 
     for itr in range(time.max_itr):
         
         solver.do_step(wave, space, itr, time.max_itr)
@@ -36,32 +35,6 @@ def run_coupled(time, space, solver, wave, potential, fname):
             print("      Mass p={:.12f}  ".format(wave.get_massp(space)[0]))
             print("      Mean p={:.12f}  ".format(wave.get_meanp(space)[0]))
             
-            #tp.plot(list(space.xgrid), list(abs(wave.psi[0,:])**2))
-            """
-            fig, axs = plt.subplots(2, 2)
-            axs[0, 0].plot(space.xgrid, abs(wave.psi[0,:]), label = r'$|\phi^+|$')
-            axs[0, 0].plot(space.xgrid, abs(wave.psi[1,:]), label = r'$|\phi^-|$')
-            axs[0, 0].set_xlim(mean_x_up - 2, mean_x_up + 2)
-            axs[0, 0].set_title('Axis [0, 0]')
-            axs[0, 0].set(xlabel = 'x')
-            axs[0, 1].plot(space.pgrid, abs(wave.psihat[0,:]), label = r'$|\hat{\phi}^+|$')
-            axs[0, 1].plot(space.pgrid, abs(wave.psihat[1,:]), label = r'$|\hat{\phi}^-|$')
-            axs[0, 1].set_xlim(mean_p_up - 2, mean_p_up + 2)
-            axs[1, 0].plot(space.xgrid, potential.rho(space.xgrid) + potential.d(space.xgrid))
-            axs[1, 0].plot(space.xgrid, - potential.rho(space.xgrid) + potential.d(space.xgrid))
-            axs[1, 0].set_xlim(mean_x_up - 2, mean_x_up + 2)
-            axs[1, 1].plot(space.xgrid, potential.rho(space.xgrid) + potential.d(space.xgrid))
-            axs[1, 1].plot(space.xgrid, - potential.rho(space.xgrid) + potential.d(space.xgrid))
-
-            # Hide x labels and tick labels for top plots and y ticks for right plots.
-            for ax in axs.flat:
-                ax.legend()
-            plt.savefig('animation/wave-{}.pdf'.format(count))
-            plt.cla()
-            count += 1
-            #plt.pause(0.001) #is necessary for the plot to update for some reason
-            #plt.cla()
-            """
 
     plt.close('all')
     f.close()
@@ -84,6 +57,10 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt 
     import numpy as np
     #import logging 
+
+    # YOU WANT TO SET THE PARAMETERS IN A COMMON FILE 
+    # SO THAT THERE IS NO RISK IN OTHER SCRIPTS USING 
+    # DIFFERENT VALUES
 
     # ----------------- PRINT OUPUT TO A FILE
     sys.stdout = open("info_run.txt", "w")
@@ -124,11 +101,14 @@ if __name__ == '__main__':
     space = Space(N, XL, EPS, XR) 
     potential = NaI(A1, BETA1, R0,
             A2, B2, RO, LAMBDAP, LAMBDAM, C2, DELTAE,
-            A12, BETA12, RX)
+            A12, BETA12, RX, 'up')
     
-    wave = Gaussian(EPS, q, p, 'exact', 2, space) # init psi and psi hat
+    wave = Gaussian(EPS, q, p, 'boa', 1, space) # init psi and psi hat
+    print(wave.psi.shape)
     time_forward = Time(T, TSTEP, 1)
-    solver_coupled = Strang(EPS, space, time_forward, potential, 2)
+    solver_single = Strang(EPS, space, time_forward, potential, 1)
+    # run one level dynamics -> detect crossing -> spawn wavepacket 
+    """
     run_coupled(time_forward, space, solver_coupled, wave, potential, FNAME_OBS)
     
     # --------------- SAVE DATA --------------
@@ -143,4 +123,4 @@ if __name__ == '__main__':
     # ----------------- SAVE DATA
     print("GOOD LUCK -------------------------------------------")
     sys.stdout.close()
-
+    """
