@@ -91,9 +91,9 @@ if __name__ == '__main__':
     #  ---------------- PARAMETERS FOR INITIAL WIGNER DISTRIBUTION 
     EPS, q, p = 0.014654629670711006, 5, 0 
     #  ---------------- PARAMETERS FOR UNIFORM GRID
-    XL, XR, N = 2 * Units.Atob, 16 * Units.Atob,  2**16
+    XL, XR, N = 2 * Units.Atob, 25 * Units.Atob,  2**16
     #  ---------------- PARAMETERS FOR TIME
-    T, TSTEP, TDIR= 80, 1/800, 1 
+    T, TSTEP, TDIR= 90, 1/400, 1 
     #  ---------------- PARAMETERS FOR POTENTIAL 
     #A1, BETA1, R0 = 0.813, 4.08, 2.67  
     A1 = 0.813 * Units.eVtoH 
@@ -113,8 +113,8 @@ if __name__ == '__main__':
     RX = 6.93 * Units.Atob
     NEQS = 2
     # ----------------- SAVE DATA TO FOLLOWING FILE 
-    FNAME = './data/wavepacketdt800.txt' 
-    FNAME_OBS = './data/observablesdt800.txt'
+    FNAME = './data/wavepacket.txt' 
+    FNAME_OBS = './data/observables.txt'
     
     print("-----> Case study: NaI  -----------------") 
     print("-----> Change of units is done at runtime for the potential") 

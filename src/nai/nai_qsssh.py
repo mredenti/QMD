@@ -1,4 +1,4 @@
-def run_qsssh(time, space, solver, wave, potential, fname):
+def run_qsssh(time, space, solver_up, wave, potential, solver_down, rate, fname):
     
     f = open(fname, 'w')
     header = 'itr \t mean_x_up \t mean_x_down \t mean_p_up \t mean_p_down \
@@ -11,10 +11,10 @@ def run_qsssh(time, space, solver, wave, potential, fname):
     wave.rho_curr =  wave.rho_new
     wave.rho_old = wave.rho_curr
     ####
-
+    spawned = False
     for itr in range(time.max_itr):
         
-        solver.do_step(wave, space, itr, time.max_itr)
+        solver_up.do_step(wave, space, itr, time.max_itr)
         # update gap status
         wave.rho_old = wave.rho_curr
         wave.rho_curr = wave.rho_new
@@ -22,42 +22,44 @@ def run_qsssh(time, space, solver, wave, potential, fname):
         
         if (wave.rho_old - wave.rho_curr) * (wave.rho_new - wave.rho_curr) > 0:
             # spawn a wavepacket onto the lower level 
-            # pass wave and whether hopping from one level to the other
-            # for the moment i would assume you are hopping from top to bottom
-            # its evolution will now have different dynamics 
+            wave_spawned = get_spawned_wavepacket(wave, potential, space, rate)
+            spawned = True
             # evolved the spawned wavepacket until the last itr 
-        
-        if itr in time.snap:
-            mean_x_up = wave.get_meanx(space)[0]
-            mean_x_down = wave.get_meanx(space)[1]
-            mean_p_up = wave.get_meanp(space)[0]
-            mean_p_down = wave.get_meanp(space)[1]
-            ke_up = wave.get_ke(space)[0]
-            ke_down = wave.get_ke(space)[1]
-            e_up = wave.get_e(space, potential)[0]
-            e_down = wave.get_e(space, potential)[1]
-            
-            data = np.array([itr, 
-                    mean_x_up, mean_x_down,
-                    mean_p_up, mean_p_down,
-                    ke_up, ke_down, 
-                    e_up, e_down,
-                    wave.get_massx(space)[0], 
-                    wave.get_massx(space)[1]])
-            
-            np.savetxt(f, data.reshape(1,-1))
-            print('%.2f %%' % (itr/(time.max_itr) * 100), end='\r')
-            print("------------ Observables -------------") # do not repeat
-            print("      Mass x={:.12f}  ".format(wave.get_massx(space)[0]))
-            print("      Mean x={:.12f}  ".format(wave.get_meanx(space)[0]))
-            print("      Mass p={:.12f}  ".format(wave.get_massp(space)[0]))
-            print("      Mean p={:.12f}  ".format(wave.get_meanp(space)[0]))
+        if spawned:
+            solver_down.do_step(wave_spawned, space, itr, time.max_itr)
+            print("Mass_up x={:.17g}  ".format(wave.get_massx(space)))
+            print("Mass_down x={:.17g} \n ".format(wave_spawned.get_massx(space)))
+            if itr in time.snap:
+                mean_x_up = wave.get_meanx(space)
+                mean_x_down = wave_spawned.get_meanx(space)
+                mean_p_up = wave.get_meanp(space)
+                mean_p_down = wave_spawned.get_meanp(space)
+                ke_up = wave.get_ke(space)
+                ke_down = wave_spawned.get_ke(space)
+                e_up = wave.get_e(space, potential)
+                e_down = wave_spawned.get_e(space, potential)
+                
+                data = np.array([itr, 
+                        mean_x_up, mean_x_down,
+                        mean_p_up, mean_p_down,
+                        ke_up, ke_down, 
+                        e_up, e_down,
+                        wave.get_massx(space), 
+                        wave_spawned.get_massx(space)])
+                
+                np.savetxt(f, data.reshape(1,-1))
+                print('%.2f %%' % (itr/(time.max_itr) * 100), end='\r')
+                print("------------ Observables -------------") # do not repeat
+                print("      Mass x={:.12f}  ".format(wave.get_massx(space)))
+                print("      Mean x={:.12f}  ".format(wave.get_meanx(space)))
+                print("      Mass p={:.12f}  ".format(wave.get_massp(space)))
+                print("      Mean p={:.12f}  ".format(wave.get_meanp(space)))
             
 
     plt.close('all')
     f.close()
     
-    return wave
+    return (wave, wave_spawned)
 
 
 if __name__ == '__main__':
@@ -69,9 +71,10 @@ if __name__ == '__main__':
     from auxiliary.time import Time
     from auxiliary.efft import ifft, fft
     from auxiliary.data import Data
+    from auxiliary.error import l2norm, l2relerror
     from potentials.examples.nai import NaI
     from solvers.pde.strang import Strang
-    from transition_formulae import superadiabatic 
+    from transition_formulae.superadiabatic import get_spawned_wavepacket 
     import matplotlib.pyplot as plt 
     import numpy as np
     #import logging 
@@ -79,16 +82,16 @@ if __name__ == '__main__':
     # YOU WANT TO SET THE PARAMETERS IN A COMMON FILE 
     # SO THAT THERE IS NO RISK IN OTHER SCRIPTS USING 
     # DIFFERENT VALUES
-
+    RATE = 'SA'
     # ----------------- PRINT OUPUT TO A FILE
-    sys.stdout = open("info_run.txt", "w")
+    sys.stdout = open("info_runSA.txt", "w")
     
     #  ---------------- PARAMETERS FOR INITIAL WIGNER DISTRIBUTION 
     EPS, q, p = 0.014654629670711006, 5, 0 
     #  ---------------- PARAMETERS FOR UNIFORM GRID
     XL, XR, N = 2 * Units.Atob, 16 * Units.Atob,  2**16
     #  ---------------- PARAMETERS FOR TIME
-    T, TSTEP, TDIR= 80, 1/800, 1 
+    T, TSTEP, TDIR= 80, 1/400, 1 
     #  ---------------- PARAMETERS FOR POTENTIAL 
     #A1, BETA1, R0 = 0.813, 4.08, 2.67  
     A1 = 0.813 * Units.eVtoH 
@@ -108,8 +111,8 @@ if __name__ == '__main__':
     RX = 6.93 * Units.Atob
     NEQS = 2
     # ----------------- SAVE DATA TO FOLLOWING FILE 
-    FNAME = './data/wavepacketdt800.txt' 
-    FNAME_OBS = './data/observablesdt800.txt'
+    FNAME = './data/qsssh_wavepacket.txt' 
+    FNAME_OBS = './data/qsssh_observables.txt'
     
     print("-----> Case study: NaI  -----------------") 
     print("-----> Change of units is done at runtime for the potential") 
@@ -117,16 +120,29 @@ if __name__ == '__main__':
     ################### TO CHECK/CHANGE ###################
     # --------------- INITIALISE SPACE-TIME-POTENTIAL BACKWARD
     space = Space(N, XL, EPS, XR) 
-    potential = NaI(A1, BETA1, R0,
+    potential_up = NaI(A1, BETA1, R0,
             A2, B2, RO, LAMBDAP, LAMBDAM, C2, DELTAE,
             A12, BETA12, RX, 'up')
+    potential_down = NaI(A1, BETA1, R0,
+            A2, B2, RO, LAMBDAP, LAMBDAM, C2, DELTAE,
+            A12, BETA12, RX, 'down')
     
     wave = Gaussian(EPS, q, p, 'boa', 1, space) # init psi and psi hat
-    print(wave.psi.shape)
     time_forward = Time(T, TSTEP, 1)
-    solver_single = Strang(EPS, space, time_forward, potential, 1) 
+    solver_single_up = Strang(EPS, space, time_forward, potential_up, 1) 
+    solver_single_down = Strang(EPS, space, time_forward, potential_down, 1) 
     # run one level dynamics -> detect crossing -> spawn wavepacket 
-    run_qsssh(time_forward, space, solver_single, wave, potential, FNAME_OBS)
+    wave_boa, wave_spawned = run_qsssh(time_forward, space, solver_single_up, wave, potential_up, solver_single_down, RATE, FNAME_OBS)
+    
+    print("---------> ERROR ANALYSIS: L2 error (abs, rel) w.r.t. reference solution")
+    # reference lower level solution
+    data = np.loadtxt('data/wavepacket.txt', skiprows=2)
+    psiexact = data[:,6] + 1j*data[:,7]
+    # print/compute L2 error (and relative) between exact and qsssh solution
+    print("L2 error ", l2norm(psiexact - wave_spawned.psi, space.dx))
+    print("L2 relative error ", l2relerror(psiexact, wave_spawned.psi, space.dx))
+    sys.stdout.close()
+
     """
     
     # --------------- SAVE DATA --------------
@@ -140,5 +156,4 @@ if __name__ == '__main__':
 
     # ----------------- SAVE DATA
     print("GOOD LUCK -------------------------------------------")
-    sys.stdout.close()
     """

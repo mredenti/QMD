@@ -37,7 +37,6 @@ set format x "%.0f"
 
 set yrange [10**(-3):1]
 plot "~/QMD/src/nai/data/observablesdt800.txt" u 1:11 t '$\phi^-$'
-# "" u 1:10 t '$\phi^+$'
 
 # set ytics format " "
 unset ylabel
@@ -45,14 +44,15 @@ unset key
 
 set ytics
 unset logscale y
+unset yrange
 set format y "%.2f"
 
 #############################################################
 #set title 'Mean Momentum Up$' # energy?
 
-set ylabel 'momentum'
-plot "~/QMD/src/nai/data/observables.txt" u 1:4, \
-       "" u 1:5 
+set ylabel 'position'
+plot "~/QMD/src/nai/data/observables.txt" u 1:2, \
+       "" u 1:3 
 
 unset multiplot
 set output 
